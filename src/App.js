@@ -1,4 +1,3 @@
-import './App.css';
 import DatasetService from './services';
 import styled from 'styled-components';
 import PivotTable from './pivotTable';
@@ -45,8 +44,6 @@ function App() {
       }
     }
   }
-
-  console.log(rowsParams)
 
   const uniqueMetrics = datasetService.getUniqueMetrics();
   data.metrics.cells = uniqueMetrics;
