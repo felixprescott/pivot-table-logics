@@ -10,23 +10,57 @@ const SettingsUL = styled.div`
 `
 
 function App() {
-  
+
   const data = {
     metrics: {
-      name: 'Metrics',
+      name: 'Selected fields',
       cells: [],
     },
     rows: [],
     sum: {
-      name: 'Sum',
+      name: 'Сбербанк РФ',
       cells: []
     },
   };
 
+  const selectedFields = [
+    'channel_type',
+    'channel',
+    'presentation_system'
+  ];
+
   const datasetService = new DatasetService();
+
+  const rowsParams = datasetService.getUniqueValuesByFieldName(selectedFields[0]);
+  
+  for (let i=1;i<selectedFields.length;i++) {
+    let fieldName = selectedFields[i];
+    for (let j=0; j<rowsParams.length; j++) {
+
+      let params = rowsParams[j];
+      if (params.length === i) {
+        let values = datasetService.getUniqueValuesForFieldByFieldNamesAndFieldValues(fieldName, params);
+        rowsParams.splice(j+1, 0, ...values);
+        j += values.length;
+      }
+    }
+  }
+
+  console.log(rowsParams)
+
   const uniqueMetrics = datasetService.getUniqueMetrics();
   data.metrics.cells = uniqueMetrics;
 
+  for (let i=0; i<rowsParams.length; i++) {
+    data.rows.push({
+      name: rowsParams[i][rowsParams[i].length-1].fieldValue,
+      margin: rowsParams[i].length,
+      cells: uniqueMetrics.map( metric => {
+        return datasetService.getSumForMetricByFieldsAndFieldsValues(metric, rowsParams[i]);
+      })
+    })
+  }
+  
   const uniqueMetricsList = uniqueMetrics.map((item) => {
     return (
       <>
@@ -37,8 +71,8 @@ function App() {
     );
   });
 
-  const fields = datasetService.getFields();
-  const fieldsList = fields.map((item) => {
+  const fieldNames = datasetService.getFieldNames();
+  const fieldNamesList = fieldNames.map((item) => {
     return (
       <>
         <input type="checkbox" />
@@ -48,19 +82,6 @@ function App() {
     );
   });
 
-  const field = "tb";
-  const uniqueValues = datasetService.getUniqueValuesByField(field);
-  for(let i=0; i<uniqueValues.length; i++) {
-    const arrOfSumByMetric = uniqueMetrics.map(metric => datasetService.getSumForMetricByFieldAndFieldValue(metric, field, uniqueValues[i]));
-    
-    data.rows.push({
-      name: uniqueValues[i],
-      cells: arrOfSumByMetric
-    })
-  };
-
-  console.log("Количество презентаций", "tb", "ТБ 9", datasetService.getSumForMetricByFieldAndFieldValue("Количество презентаций", "tb", "ТБ 9"));
-
   return (
     <>
       <SettingsUL>
@@ -68,7 +89,7 @@ function App() {
       </SettingsUL>
 
       <SettingsUL>
-        {fieldsList}
+        {fieldNamesList}
       </SettingsUL>
 
       <PivotTable data={data} />
