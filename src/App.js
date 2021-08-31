@@ -1,97 +1,110 @@
 import DatasetService from './services';
-import styled from 'styled-components';
 import PivotTable from './pivotTable';
+import { useState, useEffect } from 'react';
 
-const SettingsUL = styled.div`
-  max-width: 300px;
-  background-color: gray;
-  margin: 10px auto;
-`
+const App = () => {
 
-function App() {
+  const [metricNames, setMetricNames] = useState([]);
+  const [fieldNames, setFieldNames] = useState([]);
+  const [data, setData] = useState({metrics:{name:'Fields',cells:[],},rows:[],sum:{name:'Сбербанк РФ',cells:[]}});
 
-  const data = {
-    metrics: {
-      name: 'Selected fields',
-      cells: [],
-    },
-    rows: [],
-    sum: {
-      name: 'Сбербанк РФ',
-      cells: []
-    },
+  const toggleMetric = (metricName) => {
+    const index = metricNames.findIndex( item => item.ru === metricName);
+    const changedMetric = {...metricNames[index], checked: !metricNames[index].checked};
+    setMetricNames([...metricNames.slice(0,index), changedMetric, ...metricNames.slice(index+1)]);
   };
-
-  const selectedFields = [
-    'channel_type',
-    'channel',
-    'presentation_system'
-  ];
-
-  const datasetService = new DatasetService();
-
-  const rowsParams = datasetService.getUniqueValuesByFieldName(selectedFields[0]);
   
-  for (let i=1;i<selectedFields.length;i++) {
-    let fieldName = selectedFields[i];
-    for (let j=0; j<rowsParams.length; j++) {
+  const toggleField = (fieldName) => {
+    const index = fieldNames.findIndex( item => item.ru === fieldName);
+    const changedField = {...fieldNames[index], checked: !fieldNames[index].checked};
+    setFieldNames([...fieldNames.slice(0,index), changedField, ...fieldNames.slice(index+1)]);
+  };
+  
+  useEffect(() => {
 
-      let params = rowsParams[j];
-      if (params.length === i) {
-        let values = datasetService.getUniqueValuesForFieldByFieldNamesAndFieldValues(fieldName, params);
-        rowsParams.splice(j+1, 0, ...values);
-        j += values.length;
+    const datasetService = new DatasetService();
+
+    const uniqueMetrics = datasetService.getUniqueMetrics();
+    setMetricNames(uniqueMetrics);
+
+    const allFields = datasetService.getFieldNames();
+    setFieldNames(allFields);
+
+    const preparedData = {
+      metrics: {
+        name: 'Selected fields',
+        cells: [],
+      },
+      rows: [],
+      sum: {
+        name: 'Сбербанк РФ',
+        cells: []
+      },
+    };
+
+    const selectedFields = [
+      'channel_type',
+      'channel',
+      'presentation_system'
+    ];
+
+    const rowsParams = datasetService.getUniqueValuesByFieldName(selectedFields[0]);
+    
+    for (let i=1;i<selectedFields.length;i++) {
+      for (let j=0; j<rowsParams.length; j++) {
+        if (rowsParams[j].length === i) {
+          let values = datasetService.getUniqueValuesForFieldByFieldNamesAndFieldValues(selectedFields[i], rowsParams[j]);
+          rowsParams.splice(j+1, 0, ...values);
+          j += values.length;
+        }
       }
     }
-  }
 
-  const uniqueMetrics = datasetService.getUniqueMetrics();
-  data.metrics.cells = uniqueMetrics;
-
-  for (let i=0; i<rowsParams.length; i++) {
-    data.rows.push({
-      name: rowsParams[i][rowsParams[i].length-1].fieldValue,
-      margin: rowsParams[i].length,
-      cells: uniqueMetrics.map( metric => {
-        return datasetService.getSumForMetricByFieldsAndFieldsValues(metric, rowsParams[i]);
+    preparedData.metrics.cells = metricNames.map(metric => metric.ru);
+    
+    for (let i=0; i<rowsParams.length; i++) {
+      preparedData.rows.push({
+        name: rowsParams[i][rowsParams[i].length-1].fieldValue,
+        margin: rowsParams[i].length,
+        cells: metricNames.map( metric => {
+          return datasetService.getSumForMetricByFieldsAndFieldsValues(metric.ru, rowsParams[i]);
+        })
       })
-    })
-  }
-  
-  const uniqueMetricsList = uniqueMetrics.map((item) => {
-    return (
-      <>
-        <input type="checkbox" />
-        {item}
-        <br/>
-      </>
-    );
-  });
+    }
+    setData(preparedData);
 
-  const fieldNames = datasetService.getFieldNames();
-  const fieldNamesList = fieldNames.map((item) => {
-    return (
-      <>
-        <input type="checkbox" />
-        {item.ru}
-        <br/>
-      </>
-    );
-  });
+  },[]);
 
   return (
     <>
-      <SettingsUL>
-        {uniqueMetricsList}
-      </SettingsUL>
+      <ul style={{maxWidth: '300px', backgroundColor: 'gray', margin: '10px auto'}}>
+        {metricNames.map( (item) => {
+          return (
+            <li key={item.ru}>
+              <input type="checkbox" checked={item.checked} onChange={() => toggleMetric(item.ru)} />
+              {item.ru}
+              <br/>
+            </li>
+          )
+        })}
+      </ul>
 
-      <SettingsUL>
-        {fieldNamesList}
-      </SettingsUL>
+      <ul style={{maxWidth: '300px', backgroundColor: 'gray', margin: '10px auto'}}>
+        {fieldNames.map( (item) => {
+          return (
+            <li key={item.ru}>
+              <input type="checkbox" checked={item.checked} onChange={() => toggleField(item.ru)} />
+              {item.ru}
+              <br/>
+            </li>
+          )
+        })}
+      </ul>
 
       <PivotTable data={data} />
     </>
   );
+  
 }
 
 export default App;

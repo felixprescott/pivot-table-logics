@@ -1,5 +1,5 @@
 const PivotTable = ( {data} ) => {
-
+  
   const tableStyle = {
     borderCollapse: 'collapse',
     width: '80%',
