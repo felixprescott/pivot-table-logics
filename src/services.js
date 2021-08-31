@@ -7,12 +7,12 @@ export default class DatasetService {
       {ru: 'ТБ', en: 'tb', checked: false},
       {ru: 'ГОСБ', en: 'gosb', checked: false},
       {ru: 'Регион', en: 'region', checked: false},
-      {ru: 'Канал продаж', en: 'channel', checked: false},
-      {ru: 'Тип канала продаж', en: 'channel_type', checked: false},
-      {ru: 'Продающая роль', en: 'salling_role', checked: true},
-      {ru: 'Система презентации', en: 'presentation_system', checked: false},
+      {ru: 'Канал продаж', en: 'channel', checked: true},
+      {ru: 'Тип канала продаж', en: 'channel_type', checked: true},
+      {ru: 'Продающая роль', en: 'salling_role', checked: false},
+      {ru: 'Система презентации', en: 'presentation_system', checked: true},
       {ru: 'Группа продуктов', en: 'dash_product', checked: false},
-      {ru: 'Продуктовое предложение', en: 'product_offer', checked: true}
+      {ru: 'Продуктовое предложение', en: 'product_offer', checked: false}
     ];
   }
 

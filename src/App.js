@@ -8,20 +8,28 @@ const App = () => {
   const [metricNames, setMetricNames] = useState([]);
   const [fieldNames, setFieldNames] = useState([]);
   const [data, setData] = useState({metrics:{name:'Fields',cells:[],},rows:[],sum:{name:'Сбербанк РФ',cells:[]}});
-
+  
   useEffect(() => {
     const uniqueMetrics = datasetService.getUniqueMetrics();
     setMetricNames(uniqueMetrics);
 
     const allFields = datasetService.getFieldNames();
     setFieldNames(allFields);
-
-    const selectedFields = ['channel_type','channel','presentation_system'];
-    const rowsParams = datasetService.getRowHeadersByFields(selectedFields);
-    console.log(rowsParams);
-    const preparedData = datasetService.getDataByMetricsAndRowHeaders(uniqueMetrics , rowsParams);
-    setData(preparedData);
   },[]);
+
+  useEffect(() => {
+    //const selectedFields = ['channel_type','channel','presentation_system'];
+    if (metricNames.length && fieldNames.length) {
+
+      const selectedFields = fieldNames.filter( e => e.checked).map(e => e.en);
+      const selectedMetrics = metricNames.filter( e => e.checked);
+      
+      const rowsParams = datasetService.getRowHeadersByFields(selectedFields);
+  
+      const preparedData = datasetService.getDataByMetricsAndRowHeaders(selectedMetrics , rowsParams);
+      setData(preparedData);
+    }
+  },[metricNames, fieldNames]);
 
   const toggleMetric = (metricName) => {
     const index = metricNames.findIndex( item => item.ru === metricName);
