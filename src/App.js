@@ -3,10 +3,25 @@ import PivotTable from './pivotTable';
 import { useState, useEffect } from 'react';
 
 const App = () => {
+  const datasetService = new DatasetService();
 
   const [metricNames, setMetricNames] = useState([]);
   const [fieldNames, setFieldNames] = useState([]);
   const [data, setData] = useState({metrics:{name:'Fields',cells:[],},rows:[],sum:{name:'Сбербанк РФ',cells:[]}});
+
+  useEffect(() => {
+    const uniqueMetrics = datasetService.getUniqueMetrics();
+    setMetricNames(uniqueMetrics);
+
+    const allFields = datasetService.getFieldNames();
+    setFieldNames(allFields);
+
+    const selectedFields = ['channel_type','channel','presentation_system'];
+    const rowsParams = datasetService.getRowHeadersByFields(selectedFields);
+    console.log(rowsParams);
+    const preparedData = datasetService.getDataByMetricsAndRowHeaders(uniqueMetrics , rowsParams);
+    setData(preparedData);
+  },[]);
 
   const toggleMetric = (metricName) => {
     const index = metricNames.findIndex( item => item.ru === metricName);
@@ -20,61 +35,6 @@ const App = () => {
     setFieldNames([...fieldNames.slice(0,index), changedField, ...fieldNames.slice(index+1)]);
   };
   
-  useEffect(() => {
-
-    const datasetService = new DatasetService();
-
-    const uniqueMetrics = datasetService.getUniqueMetrics();
-    setMetricNames(uniqueMetrics);
-
-    const allFields = datasetService.getFieldNames();
-    setFieldNames(allFields);
-
-    const preparedData = {
-      metrics: {
-        name: 'Selected fields',
-        cells: [],
-      },
-      rows: [],
-      sum: {
-        name: 'Сбербанк РФ',
-        cells: []
-      },
-    };
-
-    const selectedFields = [
-      'channel_type',
-      'channel',
-      'presentation_system'
-    ];
-
-    const rowsParams = datasetService.getUniqueValuesByFieldName(selectedFields[0]);
-    
-    for (let i=1;i<selectedFields.length;i++) {
-      for (let j=0; j<rowsParams.length; j++) {
-        if (rowsParams[j].length === i) {
-          let values = datasetService.getUniqueValuesForFieldByFieldNamesAndFieldValues(selectedFields[i], rowsParams[j]);
-          rowsParams.splice(j+1, 0, ...values);
-          j += values.length;
-        }
-      }
-    }
-
-    preparedData.metrics.cells = metricNames.map(metric => metric.ru);
-    
-    for (let i=0; i<rowsParams.length; i++) {
-      preparedData.rows.push({
-        name: rowsParams[i][rowsParams[i].length-1].fieldValue,
-        margin: rowsParams[i].length,
-        cells: metricNames.map( metric => {
-          return datasetService.getSumForMetricByFieldsAndFieldsValues(metric.ru, rowsParams[i]);
-        })
-      })
-    }
-    setData(preparedData);
-
-  },[]);
-
   return (
     <>
       <ul style={{maxWidth: '300px', backgroundColor: 'gray', margin: '10px auto'}}>

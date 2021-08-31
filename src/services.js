@@ -3,7 +3,6 @@ import { dataset } from './dataset';
 export default class DatasetService {
   
   getFieldNames = () => {
-    
     return [
       {ru: 'ТБ', en: 'tb', checked: false},
       {ru: 'ГОСБ', en: 'gosb', checked: false},
@@ -35,7 +34,6 @@ export default class DatasetService {
 
   getUniqueValuesForFieldByFieldNamesAndFieldValues = (fieldName, arrayOfFieldNamesAndFieldsValues) => {
     // например ('region', [{fieldName: 'tb',fieldValue: 'ТБ 1'}, {fieldName: 'gosb',fieldValue: 'ГОСБ 1'}])
-
     let uniqueValues = new Set();
     for (let i=0; i<dataset.length; i++) {
       const item = dataset[i];
@@ -67,7 +65,6 @@ export default class DatasetService {
 
   getSumForMetricByFieldsAndFieldsValues = (metricName , arrayOfFieldsAndFieldsValues) => {
     // например ('Количество продаж', [{field: 'tb',fieldValue: 'ТБ 1'}, {field: 'gosb',fieldValue: 'ГОСБ 1'}])
-    
     const result = dataset.reduce( (sum, item) => {
         if (item.metric === metricName) {
 
@@ -85,8 +82,48 @@ export default class DatasetService {
     return result;
   }
 
-  getRowsParamsBySelectedFields = (arrayOfFieldNames) => {
-    return arrayOfFieldNames;
+  getRowHeadersByFields = (arrayOfFieldNames) => {
+    const result = this.getUniqueValuesByFieldName(arrayOfFieldNames[0]);
+
+    for (let i=1;i<arrayOfFieldNames.length;i++) {
+      for (let j=0; j<result.length; j++) {
+        if (result[j].length === i) {
+          let values = this.getUniqueValuesForFieldByFieldNamesAndFieldValues(arrayOfFieldNames[i], result[j]);
+          result.splice(j+1, 0, ...values);
+          j += values.length;
+        }
+      }
+    }
+
+    return result;
+  }
+
+  getDataByMetricsAndRowHeaders = (metrics, rowHeaders) => {
+    const data = {
+      metrics: {
+        name: 'Selected fields',
+        cells: [],
+      },
+      rows: [],
+      sum: {
+        name: 'Сбербанк РФ',
+        cells: []
+      },
+    };
+
+    data.metrics.cells = metrics.map(metric => metric.ru);
+
+    for (let i=0; i<rowHeaders.length; i++) {
+      data.rows.push({
+        name: rowHeaders[i][rowHeaders[i].length-1].fieldValue,
+        margin: rowHeaders[i].length,
+        cells: metrics.map( metric => {
+          return this.getSumForMetricByFieldsAndFieldsValues(metric.ru, rowHeaders[i]);
+        })
+      })
+    }
+
+    return data;
   }
   
 };
