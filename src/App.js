@@ -85,7 +85,7 @@ const App = () => {
   
   return (
     <>
-      <ul style={{maxWidth: '300px', backgroundColor: 'gray', margin: '10px auto'}}>
+      <ul style={{maxWidth: '300px', backgroundColor: 'aliceblue', margin: '10px auto', borderRadius: '10px', border: '1px solid gray'}}>
         {metricNames.map( (item, index) => {
           return (
             <li key={item.ru}>
@@ -98,7 +98,7 @@ const App = () => {
         })}
       </ul>
 
-      <ul style={{maxWidth: '300px', backgroundColor: 'gray', margin: '10px auto'}}>
+      <ul style={{maxWidth: '300px', backgroundColor: 'aliceblue', margin: '10px auto', borderRadius: '10px', border: '1px solid gray'}}>
         {fieldNames.map( (item, index) => {
           return (
             <li key={item.ru}>
