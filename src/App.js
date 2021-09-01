@@ -8,7 +8,7 @@ const initData = {
     cells:[],
   },
   rows:[],
-  sum:{
+  sums:{
     name:'Сбербанк РФ',
     cells:[],
   },

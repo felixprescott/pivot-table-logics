@@ -33,8 +33,8 @@ const PivotTable = ( {data} ) => {
       </tbody>
       <tfoot>
         <tr>
-          <td style={t}>{data.sum.name}</td>
-          {data.sum.cells.map( cell => <td style={t}>{cell}</td>)}
+          <td style={t}>{data.sums.name}</td>
+          {data.sums.cells.map( cell => <td style={t}>{cell}</td>)}
         </tr>
       </tfoot>
     </table>

@@ -105,7 +105,7 @@ export default class DatasetService {
         cells: [],
       },
       rows: [],
-      sum: {
+      sums: {
         name: 'Сбербанк РФ',
         cells: []
       },
@@ -122,6 +122,8 @@ export default class DatasetService {
         })
       })
     }
+
+    data.sums.cells = metrics.map(metric => this.getSumForMetricByFieldsAndFieldsValues(metric.ru, []));
 
     return data;
   }
