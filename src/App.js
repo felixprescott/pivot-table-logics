@@ -89,8 +89,8 @@ const App = () => {
         {metricNames.map( (item, index) => {
           return (
             <li key={item.ru}>
-              <button onClick={() => metricMoveUp(index)}>+</button>
-              <button onClick={() => metricMoveDown(index)}>–</button>
+              <button onClick={() => metricMoveUp(index)} disabled={index===0}>+</button>
+              <button onClick={() => metricMoveDown(index)} disabled={index>=metricNames.length-1}>–</button>
               <input type="checkbox" checked={item.checked} onChange={() => metricToggle(item.ru)} />
               {item.ru}
             </li>
@@ -102,8 +102,8 @@ const App = () => {
         {fieldNames.map( (item, index) => {
           return (
             <li key={item.ru}>
-              <button onClick={() => fieldMoveUp(index)}>+</button> 
-              <button onClick={() => fieldMoveDown(index)}>–</button>
+              <button onClick={() => fieldMoveUp(index)} disabled={index===0}>+</button> 
+              <button onClick={() => fieldMoveDown(index)} disabled={index>=fieldNames.length-1}>–</button>
               <input type="checkbox" checked={item.checked} onChange={() => fieldToggle(item.ru)} />
               {item.ru}
             </li>
