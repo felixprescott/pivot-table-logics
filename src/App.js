@@ -84,35 +84,38 @@ const App = () => {
   };
   
   return (
-    <>
-      <ul style={{maxWidth: '300px', backgroundColor: 'aliceblue', margin: '10px auto', borderRadius: '10px', border: '1px solid gray'}}>
-        {metricNames.map( (item, index) => {
-          return (
-            <li key={item.ru}>
-              <button onClick={() => metricMoveUp(index)} disabled={index===0}>+</button>
-              <button onClick={() => metricMoveDown(index)} disabled={index>=metricNames.length-1}>–</button>
-              <input type="checkbox" checked={item.checked} onChange={() => metricToggle(item.ru)} />
-              {item.ru}
-            </li>
-          )
-        })}
-      </ul>
+    <div style={{display: 'flex', flexDirection: 'row'}}>
+      <div>
+        <ul style={{maxWidth: '300px', backgroundColor: 'aliceblue', margin: '10px', borderRadius: '10px', border: '1px solid gray', listStyleType: 'none', padding: '10px'}}>
+          {metricNames.map( (item, index) => {
+            return (
+              <li key={item.ru}>
+                <button onClick={() => metricMoveUp(index)} disabled={index===0}>+</button>
+                <button onClick={() => metricMoveDown(index)} disabled={index>=metricNames.length-1}>–</button>
+                <input type="checkbox" checked={item.checked} onChange={() => metricToggle(item.ru)} />
+                {item.ru}
+              </li>
+            )
+          })}
+        </ul>
+        <ul style={{maxWidth: '300px', backgroundColor: 'aliceblue', margin: '10px', borderRadius: '10px', border: '1px solid gray', listStyleType: 'none', padding: '10px'}}>
+          {fieldNames.map( (item, index) => {
+            return (
+              <li key={item.ru}>
+                <button onClick={() => fieldMoveUp(index)} disabled={index===0}>+</button> 
+                <button onClick={() => fieldMoveDown(index)} disabled={index>=fieldNames.length-1}>–</button>
+                <input type="checkbox" checked={item.checked} onChange={() => fieldToggle(item.ru)} />
+                {item.ru}
+              </li>
+            )
+          })}
+        </ul>
+      </div>
 
-      <ul style={{maxWidth: '300px', backgroundColor: 'aliceblue', margin: '10px auto', borderRadius: '10px', border: '1px solid gray'}}>
-        {fieldNames.map( (item, index) => {
-          return (
-            <li key={item.ru}>
-              <button onClick={() => fieldMoveUp(index)} disabled={index===0}>+</button> 
-              <button onClick={() => fieldMoveDown(index)} disabled={index>=fieldNames.length-1}>–</button>
-              <input type="checkbox" checked={item.checked} onChange={() => fieldToggle(item.ru)} />
-              {item.ru}
-            </li>
-          )
-        })}
-      </ul>
-
-      <PivotTable data={data} selectedFields={fieldNames.filter(e => e.checked)}/>
-    </>
+      <div>
+        <PivotTable data={data} selectedFields={fieldNames.filter(e => e.checked)}/>
+      </div>
+    </div>
   );
   
 }
