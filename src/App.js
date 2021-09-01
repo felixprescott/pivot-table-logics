@@ -111,7 +111,7 @@ const App = () => {
         })}
       </ul>
 
-      <PivotTable data={data} />
+      <PivotTable data={data} selectedFields={fieldNames.filter(e => e.checked)}/>
     </>
   );
   

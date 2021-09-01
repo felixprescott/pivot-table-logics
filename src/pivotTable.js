@@ -1,5 +1,5 @@
-const PivotTable = ( {data} ) => {
-  
+const PivotTable = ( {data, selectedFields} ) => {
+  console.log(selectedFields);
   const tableStyle = {
     borderCollapse: 'collapse',
     width: '80%',
@@ -24,7 +24,8 @@ const PivotTable = ( {data} ) => {
           return (
             <tr>
               <td style={{border: '1px solid black', paddingLeft: row.margin*20+'px'}}>
-                <button>-</button>{row.name}
+                { (row.rowHeader.length<selectedFields.length) && <button>-</button>}
+                {row.rowHeader[row.rowHeader.length-1].fieldValue}
               </td>
               {row.cells.map( cell => <td style={t}>{cell}</td>)}
             </tr>

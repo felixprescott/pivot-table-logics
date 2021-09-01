@@ -115,7 +115,7 @@ export default class DatasetService {
 
     for (let i=0; i<rowHeaders.length; i++) {
       data.rows.push({
-        name: rowHeaders[i][rowHeaders[i].length-1].fieldValue,
+        rowHeader: rowHeaders[i],
         margin: rowHeaders[i].length,
         cells: metrics.map( metric => {
           return this.getSumForMetricByFieldsAndFieldsValues(metric.ru, rowHeaders[i]);
