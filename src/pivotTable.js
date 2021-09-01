@@ -23,7 +23,9 @@ const PivotTable = ( {data} ) => {
         {data.rows.map( (row) => {
           return (
             <tr>
-              <td style={{border: '1px solid black', paddingLeft: row.margin*20+'px'}}>{row.name}</td>
+              <td style={{border: '1px solid black', paddingLeft: row.margin*20+'px'}}>
+                <button>-</button>{row.name}
+              </td>
               {row.cells.map( cell => <td style={t}>{cell}</td>)}
             </tr>
           )

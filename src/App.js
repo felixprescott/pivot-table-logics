@@ -2,12 +2,24 @@ import DatasetService from './services';
 import PivotTable from './pivotTable';
 import { useState, useEffect } from 'react';
 
+const initData = {
+  metrics:{
+    name:'Fields',
+    cells:[],
+  },
+  rows:[],
+  sum:{
+    name:'Сбербанк РФ',
+    cells:[],
+  },
+};
+
 const App = () => {
   const datasetService = new DatasetService();
 
   const [metricNames, setMetricNames] = useState([]);
   const [fieldNames, setFieldNames] = useState([]);
-  const [data, setData] = useState({metrics:{name:'Fields',cells:[],},rows:[],sum:{name:'Сбербанк РФ',cells:[]}});
+  const [data, setData] = useState(initData);
   
   useEffect(() => {
     const uniqueMetrics = datasetService.getUniqueMetrics();
@@ -31,39 +43,69 @@ const App = () => {
     }
   },[metricNames, fieldNames]);
 
-  const toggleMetric = (metricName) => {
+  const metricToggle = (metricName) => {
     const index = metricNames.findIndex( item => item.ru === metricName);
     const changedMetric = {...metricNames[index], checked: !metricNames[index].checked};
     setMetricNames([...metricNames.slice(0,index), changedMetric, ...metricNames.slice(index+1)]);
   };
+
+  const metricMoveUp = (index) => {
+    if (index>0) {
+      const reorderedMetrics = [...metricNames.slice(0, index-1), metricNames[index], metricNames[index-1], ...metricNames.slice(index+1)];
+      setMetricNames(reorderedMetrics);
+    };
+  };
   
-  const toggleField = (fieldName) => {
+  const metricMoveDown = (index) => {
+    if (index<metricNames.length-1) {
+      const reorderedMetrics = [...metricNames.slice(0, index), metricNames[index+1], metricNames[index], ...metricNames.slice(index+2)];
+      setMetricNames(reorderedMetrics);
+    };
+  };
+  
+  const fieldToggle = (fieldName) => {
     const index = fieldNames.findIndex( item => item.ru === fieldName);
     const changedField = {...fieldNames[index], checked: !fieldNames[index].checked};
     setFieldNames([...fieldNames.slice(0,index), changedField, ...fieldNames.slice(index+1)]);
+  };
+    
+  const fieldMoveUp = (index) => {
+    if (index>0) {
+      const reorderedFields = [...fieldNames.slice(0, index-1), fieldNames[index], fieldNames[index-1], ...fieldNames.slice(index+1)];
+      setFieldNames(reorderedFields);
+    };
+  };
+  
+  const fieldMoveDown = (index) => {
+    if (index<fieldNames.length-1) {
+      const reorderedFields = [...fieldNames.slice(0, index), fieldNames[index+1], fieldNames[index], ...fieldNames.slice(index+2)];
+      setFieldNames(reorderedFields);
+    };
   };
   
   return (
     <>
       <ul style={{maxWidth: '300px', backgroundColor: 'gray', margin: '10px auto'}}>
-        {metricNames.map( (item) => {
+        {metricNames.map( (item, index) => {
           return (
             <li key={item.ru}>
-              <input type="checkbox" checked={item.checked} onChange={() => toggleMetric(item.ru)} />
+              <button onClick={() => metricMoveUp(index)}>+</button>     
+              <input type="checkbox" checked={item.checked} onChange={() => metricToggle(item.ru)} />
               {item.ru}
-              <br/>
+              <button onClick={() => metricMoveDown(index)}>-</button>
             </li>
           )
         })}
       </ul>
 
       <ul style={{maxWidth: '300px', backgroundColor: 'gray', margin: '10px auto'}}>
-        {fieldNames.map( (item) => {
+        {fieldNames.map( (item, index) => {
           return (
             <li key={item.ru}>
-              <input type="checkbox" checked={item.checked} onChange={() => toggleField(item.ru)} />
+              <button onClick={() => fieldMoveUp(index)}>+</button> 
+              <input type="checkbox" checked={item.checked} onChange={() => fieldToggle(item.ru)} />
               {item.ru}
-              <br/>
+              <button onClick={() => fieldMoveDown(index)}>-</button>
             </li>
           )
         })}
