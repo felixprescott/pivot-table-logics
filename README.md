@@ -1,6 +1,15 @@
-# Getting Started with Create React App
+# pivot-table-logics
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Проект для компонента сводной таблицы.
+
+Необходимые столбцы выбираются в первом списке. Очерёдность меняется кнопками плюс и минус.
+Необходимые строки выбираются во втором списке. Группировка определяется очерёдностью, порядок изменяется кнопками плюс и минус.
+
+Компонент находится в файле pivotTable.js. Принимает пропсы data для данных и selectedFields для отображения выбранных полей.
+
+Методы для работы с данными находятся в файле ./src/services.js
+
+Обезличенный датасет находится в файле ./src/dataset.js
 
 ## Available Scripts
 

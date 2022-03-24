@@ -1,21 +1,21 @@
 import DatasetService from './services';
 import PivotTable from './pivotTable';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
 const initData = {
   metrics:{
-    name:'Fields',
+    name:'Поля',
     cells:[],
   },
   rows:[],
   sums:{
-    name:'Сбербанк РФ',
+    name:'Итого',
     cells:[],
   },
 };
 
 const App = () => {
-  const datasetService = new DatasetService();
+  const datasetService = useMemo(() => new DatasetService(), []);
 
   const [metricNames, setMetricNames] = useState([]);
   const [fieldNames, setFieldNames] = useState([]);
@@ -27,10 +27,9 @@ const App = () => {
 
     const allFields = datasetService.getFieldNames();
     setFieldNames(allFields);
-  },[]);
+  }, [datasetService]);
 
   useEffect(() => {
-    //const selectedFields = ['channel_type','channel','presentation_system'];
     if (metricNames.length && fieldNames.length) {
 
       const selectedFields = fieldNames.filter( e => e.checked).map(e => e.en);
@@ -41,7 +40,7 @@ const App = () => {
       const preparedData = datasetService.getDataByMetricsAndRowHeaders(selectedMetrics , rowsParams);
       setData(preparedData);
     }
-  },[metricNames, fieldNames]);
+  }, [metricNames, fieldNames, datasetService]);
 
   const metricToggle = (metricName) => {
     const index = metricNames.findIndex( item => item.ru === metricName);
@@ -84,36 +83,41 @@ const App = () => {
   };
   
   return (
-    <div style={{display: 'flex', flexDirection: 'row'}}>
-      <div>
-        <ul style={{maxWidth: '300px', backgroundColor: 'aliceblue', margin: '10px', borderRadius: '10px', border: '1px solid gray', listStyleType: 'none', padding: '10px'}}>
-          {metricNames.map( (item, index) => {
-            return (
-              <li key={item.ru}>
-                <button onClick={() => metricMoveUp(index)} disabled={index===0}>+</button>
-                <button onClick={() => metricMoveDown(index)} disabled={index>=metricNames.length-1}>–</button>
-                <input type="checkbox" checked={item.checked} onChange={() => metricToggle(item.ru)} />
-                {item.ru}
-              </li>
-            )
-          })}
-        </ul>
-        <ul style={{maxWidth: '300px', backgroundColor: 'aliceblue', margin: '10px', borderRadius: '10px', border: '1px solid gray', listStyleType: 'none', padding: '10px'}}>
-          {fieldNames.map( (item, index) => {
-            return (
-              <li key={item.ru}>
-                <button onClick={() => fieldMoveUp(index)} disabled={index===0}>+</button> 
-                <button onClick={() => fieldMoveDown(index)} disabled={index>=fieldNames.length-1}>–</button>
-                <input type="checkbox" checked={item.checked} onChange={() => fieldToggle(item.ru)} />
-                {item.ru}
-              </li>
-            )
-          })}
-        </ul>
-      </div>
+    <div>
+      <h1 style={{textAlign: 'center'}}>Сводная таблица</h1>
+      <div style={{display: 'flex', justifyContent: 'center'}}>
+        <div>
+          <h3 style={{textAlign: 'center'}}>Столбцы</h3>
+          <ul style={{maxWidth: '300px', margin: '10px', border: '1px solid gray', listStyleType: 'none', padding: '10px'}}>
+            {metricNames.map( (item, index) => {
+              return (
+                <li key={item.ru}>
+                  <button onClick={() => metricMoveUp(index)} disabled={index===0}>+</button>
+                  <button onClick={() => metricMoveDown(index)} disabled={index>=metricNames.length-1}>–</button>
+                  <input type="checkbox" checked={item.checked} onChange={() => metricToggle(item.ru)} />
+                  {item.ru}
+                </li>
+              )
+            })}
+          </ul>
+          <h3 style={{textAlign: 'center'}}>Строки</h3>
+          <ul style={{maxWidth: '300px', margin: '10px', border: '1px solid gray', listStyleType: 'none', padding: '10px'}}>
+            {fieldNames.map( (item, index) => {
+              return (
+                <li key={item.ru}>
+                  <button onClick={() => fieldMoveUp(index)} disabled={index===0}>+</button> 
+                  <button onClick={() => fieldMoveDown(index)} disabled={index>=fieldNames.length-1}>–</button>
+                  <input type="checkbox" checked={item.checked} onChange={() => fieldToggle(item.ru)} />
+                  {item.ru}
+                </li>
+              )
+            })}
+          </ul>
+        </div>
 
-      <div>
-        <PivotTable data={data} selectedFields={fieldNames.filter(e => e.checked)}/>
+        <div>
+          <PivotTable data={data} selectedFields={fieldNames.filter(e => e.checked)}/>
+        </div>
       </div>
     </div>
   );

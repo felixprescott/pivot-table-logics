@@ -101,12 +101,12 @@ export default class DatasetService {
   getDataByMetricsAndRowHeaders = (metrics, rowHeaders) => {
     const data = {
       metrics: {
-        name: 'Selected fields',
+        name: 'Поля',
         cells: [],
       },
       rows: [],
       sums: {
-        name: 'Сбербанк РФ',
+        name: 'Итого',
         cells: []
       },
     };
